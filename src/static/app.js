@@ -32,8 +32,13 @@ document.addEventListener("DOMContentLoaded", () => {
           <p><strong>Availability:</strong> ${spotsLeft} spots left</p>
           <div class="participants">
             <h5>Participants:</h5>
-            <ul>
-              ${details.participants.map((participant) => `<li>${participant}</li>`).join("")}
+            <ul style="list-style-type: none; padding: 0;">
+              ${details.participants.map((participant) => `
+                <li>
+                  ${participant}
+                  <button class="delete-participant" data-email="${participant}">❌</button>
+                </li>
+              `).join("")}
             </ul>
           </div>
         `;
@@ -45,6 +50,31 @@ document.addEventListener("DOMContentLoaded", () => {
         option.value = name;
         option.textContent = name;
         activitySelect.appendChild(option);
+
+        // Add event listener for delete buttons
+        activityCard.querySelectorAll(".delete-participant").forEach(button => {
+          button.addEventListener("click", async (event) => {
+            const email = event.target.dataset.email;
+            try {
+              const response = await fetch(
+                `/activities/${encodeURIComponent(name)}/unregister?email=${encodeURIComponent(email)}`,
+                {
+                  method: "POST",
+                }
+              );
+
+              if (!response.ok) {
+                throw new Error("Failed to unregister participant");
+              }
+
+              // Refresh the activity details
+              fetchActivities();
+            } catch (error) {
+              console.error(error);
+              alert("An error occurred while trying to unregister the participant.");
+            }
+          });
+        });
       });
     } catch (error) {
       activitiesList.innerHTML = "<p>Failed to load activities. Please try again later.</p>";

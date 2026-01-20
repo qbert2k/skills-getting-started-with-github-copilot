@@ -14,6 +14,16 @@
         "--reload"
       ],
       "jinja": true
+    },
+    {
+      "name": "Run Tests",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/-m",
+      "args": [
+        "pytest"
+      ],
+      "console": "integratedTerminal"
     }
   ]
 }
